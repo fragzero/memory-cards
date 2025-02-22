@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card } from "./Card";
 import { CardType, GameState } from "@/types/game";
@@ -8,6 +7,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 
 const INITIAL_TIME = 60;
+const PREVIEW_TIME = 5000; // 5 seconds preview
 
 const cardColors = [
   "#9b87f5", // Primary Purple
@@ -30,35 +30,33 @@ const cardColors = [
   "#FFE29F", // Light Yellow
 ];
 
-// Create pairs of cards with matching colors
 const createInitialCards = () => {
   const cards: CardType[] = [];
   cardColors.forEach((color, index) => {
-    // Create two cards with the same color (a pair)
     const pair = [
       {
         id: index * 2 + 1,
-        image: color, // Using color as the image identifier
+        image: color,
         isFlipped: false,
         isMatched: false,
       },
       {
         id: index * 2 + 2,
-        image: color, // Same color for the matching pair
+        image: color,
         isFlipped: false,
         isMatched: false,
       },
     ];
     cards.push(...pair);
   });
-  return cards.sort(() => Math.random() - 0.5); // Shuffle the cards
+  return cards.sort(() => Math.random() - 0.5);
 };
 
 const initialCards = createInitialCards();
 
 export const GameBoard = () => {
   const [gameState, setGameState] = useState<GameState>({
-    cards: initialCards,
+    cards: initialCards.map(card => ({ ...card, isFlipped: true })),
     moves: 0,
     score: 0,
     timeLeft: INITIAL_TIME,
@@ -68,6 +66,20 @@ export const GameBoard = () => {
 
   const [flippedCards, setFlippedCards] = useState<number[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [gameStarted, setGameStarted] = useState(false);
+  const [showPreview, setShowPreview] = useState(true);
+
+  useEffect(() => {
+    const previewTimer = setTimeout(() => {
+      setShowPreview(false);
+      setGameState(prev => ({
+        ...prev,
+        cards: prev.cards.map(card => ({ ...card, isFlipped: false }))
+      }));
+    }, PREVIEW_TIME);
+
+    return () => clearTimeout(previewTimer);
+  }, []);
 
   useEffect(() => {
     if (flippedCards.length === 2) {
@@ -113,6 +125,10 @@ export const GameBoard = () => {
   }, [flippedCards]);
 
   const handleCardFlip = (id: number) => {
+    if (!gameStarted) {
+      setGameStarted(true);
+    }
+
     if (flippedCards.length < 2 && !isProcessing) {
       setGameState((prev) => ({
         ...prev,
@@ -153,6 +169,7 @@ export const GameBoard = () => {
               initialTime={INITIAL_TIME}
               gameMode={gameState.gameMode}
               onTimeUp={gameOver}
+              gameStarted={gameStarted}
             />
           </motion.div>
         </div>
@@ -177,7 +194,7 @@ export const GameBoard = () => {
             key={card.id}
             card={card}
             onFlip={handleCardFlip}
-            isDisabled={isProcessing || gameState.isGameOver}
+            isDisabled={isProcessing || gameState.isGameOver || showPreview}
           />
         ))}
       </motion.div>
