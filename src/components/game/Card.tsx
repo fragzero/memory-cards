@@ -43,13 +43,10 @@ export const Card = ({ card, onFlip, isDisabled }: CardProps) => {
         <div className="absolute w-full h-full backface-hidden bg-game-purple rounded-lg shadow-lg border-2 border-white flex items-center justify-center">
           <span className="text-3xl">?</span>
         </div>
-        <div className="absolute w-full h-full backface-hidden rotate-y-180 bg-white rounded-lg shadow-lg overflow-hidden">
-          <img
-            src={card.image}
-            alt="Card"
-            className="w-full h-full object-cover"
-            loading="lazy"
-          />
+        <div 
+          className="absolute w-full h-full backface-hidden rotate-y-180 rounded-lg shadow-lg overflow-hidden"
+          style={{ backgroundColor: card.image }}
+        >
         </div>
       </div>
     </motion.div>

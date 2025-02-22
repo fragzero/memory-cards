@@ -9,15 +9,52 @@ import { toast } from "sonner";
 
 const INITIAL_TIME = 60;
 
-const initialCards: CardType[] = Array(36)
-  .fill(null)
-  .map((_, index) => ({
-    id: index + 1,
-    image: `/placeholder.svg`, // Each pair will share the same image
-    isFlipped: false,
-    isMatched: false,
-  }))
-  .sort(() => Math.random() - 0.5); // Shuffle the cards
+const cardColors = [
+  "#9b87f5", // Primary Purple
+  "#7E69AB", // Secondary Purple
+  "#6E59A5", // Tertiary Purple
+  "#D6BCFA", // Light Purple
+  "#F2FCE2", // Soft Green
+  "#FEF7CD", // Soft Yellow
+  "#FEC6A1", // Soft Orange
+  "#FFDEE2", // Soft Pink
+  "#FDE1D3", // Soft Peach
+  "#D3E4FD", // Soft Blue
+  "#8B5CF6", // Vivid Purple
+  "#D946EF", // Magenta Pink
+  "#F97316", // Bright Orange
+  "#0EA5E9", // Ocean Blue
+  "#1EAEDB", // Bright Blue
+  "#33C3F0", // Sky Blue
+  "#FFA99F", // Coral
+  "#FFE29F", // Light Yellow
+];
+
+// Create pairs of cards with matching colors
+const createInitialCards = () => {
+  const cards: CardType[] = [];
+  cardColors.forEach((color, index) => {
+    // Create two cards with the same color (a pair)
+    const pair = [
+      {
+        id: index * 2 + 1,
+        image: color, // Using color as the image identifier
+        isFlipped: false,
+        isMatched: false,
+      },
+      {
+        id: index * 2 + 2,
+        image: color, // Same color for the matching pair
+        isFlipped: false,
+        isMatched: false,
+      },
+    ];
+    cards.push(...pair);
+  });
+  return cards.sort(() => Math.random() - 0.5); // Shuffle the cards
+};
+
+const initialCards = createInitialCards();
 
 export const GameBoard = () => {
   const [gameState, setGameState] = useState<GameState>({
