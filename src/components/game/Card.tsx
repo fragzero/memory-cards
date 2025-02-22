@@ -28,7 +28,7 @@ export const Card = ({ card, onFlip, isDisabled }: CardProps) => {
 
   return (
     <motion.div
-      className={`relative w-24 h-32 cursor-pointer perspective-1000 ${
+      className={`relative w-20 h-28 cursor-pointer perspective-1000 ${
         isDisabled ? "pointer-events-none" : ""
       }`}
       whileHover={{ scale: 1.05 }}

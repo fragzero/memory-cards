@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card } from "./Card";
 import { CardType, GameState } from "@/types/game";
@@ -9,12 +8,12 @@ import { toast } from "sonner";
 
 const INITIAL_TIME = 60;
 
-const initialCards: CardType[] = [
-  // Example cards - replace with actual images
-  { id: 1, image: "/placeholder.svg", isFlipped: false, isMatched: false },
-  { id: 2, image: "/placeholder.svg", isFlipped: false, isMatched: false },
-  // Add more cards here
-];
+const initialCards: CardType[] = Array(18).fill(null).map((_, index) => ({
+  id: index + 1,
+  image: "/placeholder.svg",
+  isFlipped: false,
+  isMatched: false,
+}));
 
 export const GameBoard = () => {
   const [gameState, setGameState] = useState<GameState>({
@@ -37,7 +36,6 @@ export const GameBoard = () => {
       const secondCard = gameState.cards.find((card) => card.id === secondId);
 
       if (firstCard?.image === secondCard?.image) {
-        // Match found
         setGameState((prev) => ({
           ...prev,
           cards: prev.cards.map((card) =>
@@ -49,7 +47,6 @@ export const GameBoard = () => {
         }));
         toast.success("Match found!");
       } else {
-        // No match
         setTimeout(() => {
           setGameState((prev) => ({
             ...prev,
@@ -97,7 +94,7 @@ export const GameBoard = () => {
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-col items-center gap-8 p-4"
     >
-      <div className="flex items-center justify-between w-full max-w-2xl">
+      <div className="flex items-center justify-between w-full max-w-4xl">
         <div className="flex items-center gap-4">
           <motion.div
             className="flex items-center gap-2 bg-game-purple px-4 py-2 rounded-full"
@@ -121,7 +118,7 @@ export const GameBoard = () => {
       </div>
 
       <motion.div
-        className="grid grid-cols-4 gap-4 md:gap-6"
+        className="grid grid-cols-6 gap-3 md:gap-4"
         variants={{
           hidden: { opacity: 0 },
           show: {
