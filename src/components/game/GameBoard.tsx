@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card } from "./Card";
 import { CardType, GameState } from "@/types/game";
@@ -8,12 +9,15 @@ import { toast } from "sonner";
 
 const INITIAL_TIME = 60;
 
-const initialCards: CardType[] = Array(18).fill(null).map((_, index) => ({
-  id: index + 1,
-  image: "/placeholder.svg",
-  isFlipped: false,
-  isMatched: false,
-}));
+const initialCards: CardType[] = Array(36)
+  .fill(null)
+  .map((_, index) => ({
+    id: index + 1,
+    image: `/placeholder.svg`, // Each pair will share the same image
+    isFlipped: false,
+    isMatched: false,
+  }))
+  .sort(() => Math.random() - 0.5); // Shuffle the cards
 
 export const GameBoard = () => {
   const [gameState, setGameState] = useState<GameState>({
@@ -35,7 +39,7 @@ export const GameBoard = () => {
       const firstCard = gameState.cards.find((card) => card.id === firstId);
       const secondCard = gameState.cards.find((card) => card.id === secondId);
 
-      if (firstCard?.image === secondCard?.image) {
+      if (firstCard?.image === secondCard?.image && firstId !== secondId) {
         setGameState((prev) => ({
           ...prev,
           cards: prev.cards.map((card) =>
