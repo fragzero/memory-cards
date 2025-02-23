@@ -18,7 +18,7 @@ const Index = () => {
             Memory Game
           </motion.div>
           <h1 className="text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-game-accent to-purple-500">
-            Paw Pair Memory
+            Memory Cards
           </h1>
           <p className="text-gray-600 max-w-md mx-auto">
             Match the adorable cats and dogs in this memory game. Challenge yourself in Time Attack mode!

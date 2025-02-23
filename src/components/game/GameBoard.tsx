@@ -5,50 +5,51 @@ import { Timer } from "./Timer";
 import { Trophy, Timer as TimerIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import Confetti from "react-confetti";
 
 const INITIAL_TIME = 60;
 const PREVIEW_TIME = 5000; // 5 seconds preview
 
 const cardColors = [
-  "#9b87f5", // Primary Purple
-  "#7E69AB", // Secondary Purple
-  "#6E59A5", // Tertiary Purple
-  "#D6BCFA", // Light Purple
-  "#F2FCE2", // Soft Green
-  "#FEF7CD", // Soft Yellow
-  "#FEC6A1", // Soft Orange
-  "#FFDEE2", // Soft Pink
-  "#FDE1D3", // Soft Peach
-  "#D3E4FD", // Soft Blue
-  "#8B5CF6", // Vivid Purple
-  "#D946EF", // Magenta Pink
-  "#F97316", // Bright Orange
-  "#0EA5E9", // Ocean Blue
-  "#1EAEDB", // Bright Blue
-  "#33C3F0", // Sky Blue
-  "#FFA99F", // Coral
-  "#FFE29F", // Light Yellow
+  "#FF0000", // Red
+  "#00FF00", // Green
+  "#0000FF", // Blue
+  "#FFFF00", // Yellow
+  "#FF00FF", // Magenta
+  "#00FFFF", // Cyan
+  "#FFA500", // Orange
+  "#800080", // Purple
+  "#FFC0CB", // Pink
+  "#A52A2A", // Brown
+  "#808080", // Gray
+  "#FFFFFF", // White
+  "#000000", // Black
+  "#FFD700", // Gold
+  "#FF4500", // Orange Red
+  "#32CD32", // Lime Green
 ];
 
 const createInitialCards = () => {
   const cards: CardType[] = [];
-  cardColors.forEach((color, index) => {
+  // Create pairs for a 4x4 grid (16 cards total)
+  for (let i = 0; i < 8; i++) { // 8 pairs for a 4x4 grid
+    const color = cardColors[i % cardColors.length]; // Use basic colors
     const pair = [
       {
-        id: index * 2 + 1,
+        id: i * 2 + 1,
         image: color,
         isFlipped: false,
         isMatched: false,
       },
       {
-        id: index * 2 + 2,
+        id: i * 2 + 2,
         image: color,
         isFlipped: false,
         isMatched: false,
       },
     ];
     cards.push(...pair);
-  });
+  }
   return cards.sort(() => Math.random() - 0.5);
 };
 
@@ -68,6 +69,7 @@ export const GameBoard = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [showPreview, setShowPreview] = useState(true);
+  const [confetti, setConfetti] = useState(false);
 
   useEffect(() => {
     const previewTimer = setTimeout(() => {
@@ -99,6 +101,10 @@ export const GameBoard = () => {
           score: prev.score + 10,
         }));
         toast.success("Match found!");
+        
+        if (gameState.cards.every(card => card.isMatched || card.isFlipped)) {
+          setConfetti(true);
+        }
       } else {
         setTimeout(() => {
           setGameState((prev) => ({
@@ -127,6 +133,7 @@ export const GameBoard = () => {
   const handleCardFlip = (id: number) => {
     if (!gameStarted) {
       setGameStarted(true);
+      setGameState(prev => ({ ...prev, timeLeft: INITIAL_TIME }));
     }
 
     if (flippedCards.length < 2 && !isProcessing) {
@@ -140,6 +147,21 @@ export const GameBoard = () => {
     }
   };
 
+  useEffect(() => {
+    const timerInterval = setInterval(() => {
+      setGameState(prev => {
+        if (prev.timeLeft <= 1) {
+          clearInterval(timerInterval);
+          gameOver();
+          return { ...prev, timeLeft: 0 };
+        }
+        return { ...prev, timeLeft: prev.timeLeft - 1 };
+      });
+    }, 1000);
+
+    return () => clearInterval(timerInterval);
+  }, [gameStarted]);
+
   const gameOver = () => {
     setGameState((prev) => ({ ...prev, isGameOver: true }));
     toast.error("Game Over!");
@@ -151,6 +173,7 @@ export const GameBoard = () => {
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-col items-center gap-8 p-4"
     >
+      {confetti && <Confetti width={window.innerWidth} height={window.innerHeight} />}
       <div className="flex items-center justify-between w-full max-w-4xl">
         <div className="flex items-center gap-4">
           <motion.div
@@ -176,7 +199,7 @@ export const GameBoard = () => {
       </div>
 
       <motion.div
-        className="grid grid-cols-6 gap-3 md:gap-4"
+        className="grid grid-cols-4 gap-3 md:gap-4"
         variants={{
           hidden: { opacity: 0 },
           show: {

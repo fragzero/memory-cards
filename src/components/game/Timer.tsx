@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { GameMode } from "@/types/game";
 
@@ -13,7 +12,10 @@ export const Timer = ({ initialTime, gameMode, onTimeUp, gameStarted }: TimerPro
   const [timeLeft, setTimeLeft] = useState(initialTime);
 
   useEffect(() => {
-    if (!gameStarted || gameMode !== "timeAttack") return;
+    if (!gameStarted) {
+      setTimeLeft(initialTime);
+      return;
+    }
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
@@ -27,7 +29,7 @@ export const Timer = ({ initialTime, gameMode, onTimeUp, gameStarted }: TimerPro
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [gameMode, onTimeUp, gameStarted]);
+  }, [gameStarted, initialTime, onTimeUp]);
 
   return (
     <span className="font-mono font-semibold">
