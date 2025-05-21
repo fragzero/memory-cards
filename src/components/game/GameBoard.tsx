@@ -91,20 +91,26 @@ export const GameBoard = () => {
       const secondCard = gameState.cards.find((card) => card.id === secondId);
 
       if (firstCard?.image === secondCard?.image && firstId !== secondId) {
-        setGameState((prev) => ({
-          ...prev,
-          cards: prev.cards.map((card) =>
+        setGameState((prev) => {
+          const newCards = prev.cards.map((card) =>
             card.id === firstId || card.id === secondId
               ? { ...card, isMatched: true }
               : card
-          ),
-          score: prev.score + 10,
-        }));
-        toast.success("Match found!");
-        
-        if (gameState.cards.every(card => card.isMatched || card.isFlipped)) {
-          setConfetti(true);
-        }
+          );
+          return {
+            ...prev,
+            cards: newCards,
+            score: prev.score + 10,
+          };
+        }, (newState) => {
+          // newState is the state after the above update
+          toast.success("Match found!");
+          const allCardsMatched = newState.cards.every(card => card.isMatched);
+          if (allCardsMatched) {
+            setGameState(prev => ({ ...prev, isGameOver: true }));
+            toast.success("Congratulations! You've matched all pairs!");
+          }
+        });
       } else {
         setTimeout(() => {
           setGameState((prev) => ({
@@ -193,6 +199,7 @@ export const GameBoard = () => {
               gameMode={gameState.gameMode}
               onTimeUp={gameOver}
               gameStarted={gameStarted}
+              isGameOver={gameState.isGameOver}
             />
           </motion.div>
         </div>
