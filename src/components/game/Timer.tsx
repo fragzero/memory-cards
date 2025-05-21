@@ -7,13 +7,14 @@ interface TimerProps {
   gameMode: GameMode;
   onTimeUp: () => void;
   gameStarted: boolean;
+  isGameOver: boolean;
 }
 
-export const Timer = ({ initialTime, gameMode, onTimeUp, gameStarted }: TimerProps) => {
+export const Timer = ({ initialTime, gameMode, onTimeUp, gameStarted, isGameOver }: TimerProps) => {
   const [timeLeft, setTimeLeft] = useState(initialTime);
 
   useEffect(() => {
-    if (!gameStarted || gameMode !== "timeAttack") return;
+    if (!gameStarted || gameMode !== "timeAttack" || isGameOver) return;
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
@@ -27,7 +28,7 @@ export const Timer = ({ initialTime, gameMode, onTimeUp, gameStarted }: TimerPro
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [gameMode, onTimeUp, gameStarted]);
+  }, [gameMode, onTimeUp, gameStarted, isGameOver]);
 
   return (
     <span className="font-mono font-semibold">
